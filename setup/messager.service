@@ -1,0 +1,13 @@
+[Unit]
+Description=Messager
+After=network-online.target
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=nick
+Environment=MESSAGER_HOME=/home/messager
+ExecStart=/home/messager/bin/messager.pl
+
+[Install]
+WantedBy=multi-user.target

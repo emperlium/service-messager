@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>wsserver</title>
+        <script type="text/javascript" src="MessagerConfig.js"></script>
+        <script type="text/javascript" src="Messager.js"></script>
+        <script type="text/javascript" src="/common/javascript/messages.js"></script>
+        <link rel="stylesheet" type="text/css" href="/common/css/main.css">
+        <link rel="stylesheet" type="text/css" href="/common/css/messages.css">
+        <script type="text/javascript">
+            window.onload = function() {
+                var messager = NickMessager( 'server1' );
+                messager.event = function(msg) {
+                    debug( new Date().toLocaleTimeString(), msg );
+                };
+            }
+        </script>
+    </head>
+    <body>
+        <pre id="debug" class="debug"></pre>
+    </body>
+<html>
