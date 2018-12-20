@@ -11,6 +11,7 @@ Messages consist of an array of strings.
  * Config::General
  * IO::Select
  * IO::Pipe
+ * Digest::SHA
 
 ## Installation
 
