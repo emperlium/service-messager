@@ -15,9 +15,7 @@ function NickMessager(filter, callback) {
     };
     if (!! window.EventSource) {
         var es = new EventSource(
-            location.protocol === 'https:'
-            ? 'https://' + host + NICK_MESSAGER_PATH
-            : 'http://' + host + ':' + NICK_MESSAGER_PORT + '/'
+            location.protocol + '//' + host + NICK_MESSAGER_PATH
         );
         es.addEventListener(
             'message', handler, false
