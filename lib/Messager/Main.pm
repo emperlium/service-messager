@@ -22,7 +22,6 @@ use sigtrap 'handler' => sub{
 sub run {
     my( $class ) = @_;
     my @queue :shared;
-    Nick::Log -> instance( 'date' => 0 );
     Messager::Producers -> server( \@queue )
         or return;
     my $pipe = IO::Pipe -> new();
