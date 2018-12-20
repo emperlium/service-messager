@@ -66,6 +66,12 @@ sub get {
     }
 }
 
+sub can_read {
+    my( $self, $timeout ) = @_;
+    return $$self{'server'} -> connected()
+        && $$self{'select'} -> can_read( $timeout || 0 );
+}
+
 sub flush {
     my( $self ) = @_;
     exists( $$self{'server'} )
