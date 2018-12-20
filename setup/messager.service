@@ -4,6 +4,7 @@ After=network-online.target
 Requires=network-online.target
 
 [Service]
+SyslogIdentifier=messager
 Type=notify
 NotifyAccess=main
 User=nick
