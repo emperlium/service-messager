@@ -1,6 +1,7 @@
 [Unit]
 Description=Messager
 After=network-online.target
+Requires=network-online.target
 
 [Service]
 Type=notify
