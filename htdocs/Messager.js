@@ -1,33 +1,41 @@
-function NickMessager(filter, callback) {
-    var flt_len = filter.length;
-    var events = {};
-    var parts;
-    var host = document.location.hostname;
-    var handler = function(msg) {
-        if (
-            msg.data.substr(0, flt_len) === filter
-        ) {
-            parts = msg.data.substr(flt_len + 1).split('\t');
-            if ( parts[0] in events ) {
-                events[ parts.shift() ].apply( this, parts );
+class NickMessager {
+    constructor() {
+        let loc = document.location;
+        let host = loc.hostname;
+
+        var watchers = this.watchers = {};
+        var on_message = msg => {
+            let parts = msg.data.split('\t');
+            let type = parts.shift();
+            let event = parts.shift();
+            if (
+                watchers.hasOwnProperty( type )
+                &&
+                watchers[type].hasOwnProperty( event )
+            ) {
+                watchers[type][event].apply( null, parts );
             }
+        };
+
+        if ( !! window.EventSource ) {
+            new EventSource(
+                `${loc.protocol}//${host}${NICK_MESSAGER_PATH}`
+            ).addEventListener(
+                'message', on_message, false
+            );
+        } else if ( !! window.WebSocket ) {
+            new WebSocket(
+                `ws://${host}:${NICK_MESSAGER_PORT}/`,
+                [ 'chat' ]
+            ).onmessage = on_message;
+        } else {
+            throw 'No browser messager support'
         }
-    };
-    if (!! window.EventSource) {
-        var es = new EventSource(
-            location.protocol + '//' + host + NICK_MESSAGER_PATH
-        );
-        es.addEventListener(
-            'message', handler, false
-        );
-    } else if (!! window.WebSocket) {
-        var ws = new WebSocket(
-            'ws://' + host + ':' + NICK_MESSAGER_PORT + '/',
-            [ 'chat' ]
-        );
-        ws.onmessage = handler;
-    } else {
-        throw 'No browser messager support'
     }
-    return events;
+
+    add_watcher( type ) {
+        let events = {};
+        this.watchers[type] = events;
+        return events;
+    }
 }

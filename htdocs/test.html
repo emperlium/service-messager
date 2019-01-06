@@ -1,19 +1,19 @@
 <html>
     <head>
         <title>wsserver</title>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
         <script type="text/javascript" src="MessagerConfig.js"></script>
         <script type="text/javascript" src="Messager.js"></script>
         <script type="text/javascript">
             window.onload = function() {
-                // producer messages we're interested in
-                var messager = NickMessager( 'server1' );
-                messager.event = function(msg) {
+                // see bin/test.pl for companion message generator
+                new NickMessager().add_watcher( 'producer_name_1' ).event_name = msg => {
                     console.log( new Date().toLocaleTimeString(), msg );
                 };
             }
         </script>
     </head>
     <body>
-        <pre id="debug" class="debug"></pre>
     </body>
 <html>

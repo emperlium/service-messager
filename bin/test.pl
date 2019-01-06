@@ -57,7 +57,7 @@ $SIG{'KILL'} = sub {
         my $server = Nick::Messager::Consumer -> new();
         my @line;
         while ( @line = $server -> get() ) {
-            print join( '|', 'clientf', @line ), "\n";
+            print join( '|', 'consumer', @line ), "\n";
             sleep $SLEEP_OFF * 2;
             $server -> flush();
         }
@@ -70,13 +70,13 @@ my @producers;
         push @producers => async {
             random_sleep();
             print "create server $_\n";
-            my $server = Nick::Messager::Producer -> new( 'server' . $_ );
+            my $server = Nick::Messager::Producer -> new( 'producer_name_' . $_ );
             my $max = int( rand 5 ) + 5;
             for ( my $i = 1; $i <= $max; $i++ ) {
-                $server -> send( 'event' => $i );
+                $server -> send( 'event_name' => $i );
                 random_sleep();
             }
-            print "server $_ close after $max\n";
+            print "producer_name_$_ close after $max\n";
             $server -> close();
         };
     }
