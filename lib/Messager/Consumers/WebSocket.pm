@@ -38,7 +38,7 @@ sub add {
         'Upgrade: websocket',
         'Connection: Upgrade',
         'Sec-WebSocket-Accept: ' . $digest,
-        'Sec-WebSocket-Protocol: test',
+        'Sec-WebSocket-Protocol: chat',
         '', ''
     );
     $self -> SUPER::add( $client );
