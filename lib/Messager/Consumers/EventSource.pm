@@ -34,9 +34,7 @@ sub add {
 }
 
 sub send {
-    $_[0] -> SUPER::send(
-        'data: ' . $_[1] . "\n"
-    );
+    $_[0] -> SUPER::send( "data: $_[1]\n\n" );
 }
 
 1;
