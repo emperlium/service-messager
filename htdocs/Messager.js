@@ -18,18 +18,44 @@ class NickMessager {
         };
 
         if ( !! window.EventSource ) {
-            new EventSource(
-                `${loc.protocol}//${host}${NICK_MESSAGER_PATH}`
-            ).addEventListener(
-                'message', on_message, false
-            );
+            let url = `${loc.protocol}//${host}:${NICK_MESSAGER_PORT}/`;
+            let open_event_source = () => {
+                let evt = new EventSource( url );
+                evt.onopen = () => {
+                    console.log( 'NickMessager EventSource: ' + url );
+                };
+                evt.onerror = error => {
+                    console.error( `NickMessager EventSource ${url} error: `, error );
+                }
+                evt.addEventListener( 'message', on_message, false );
+            };
+            let check_url = ( reject ) => {
+                let xhr = new XMLHttpRequest();
+                xhr.open( 'head', url );
+                xhr.onload = open_event_source;
+                xhr.onerror = reject;
+                xhr.send();
+            };
+            check_url( () => {
+                console.error( `EventSource port ${NICK_MESSAGER_PORT} not available` );
+                url = `${loc.protocol}//${host}${NICK_MESSAGER_PATH}`;
+                check_url( () => {
+                    throw `EventSource path ${NICK_MESSAGER_PATH} not available`;
+                }
+                );
+            } );
         } else if ( !! window.WebSocket ) {
-            new WebSocket(
-                `ws://${host}:${NICK_MESSAGER_PORT}/`,
-                [ 'chat' ]
-            ).onmessage = on_message;
+            let url = `ws://${host}:${NICK_MESSAGER_PORT}/`;
+            let ws = new WebSocket( url, [ 'chat' ] );
+            ws.onopen = () => {
+                console.log( 'NickMessager WebSocket: ' + url );
+            };
+            ws.onerror = error => {
+                console.error( `NickMessager WebSocket ${url} error: `, error );
+            }
+            ws.onmessage = on_message;
         } else {
-            throw 'No browser messager support'
+            throw 'No browser messager support';
         }
     }
 
