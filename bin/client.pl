@@ -15,6 +15,7 @@ use base 'Nick::StandardBase';
 
 use Nick::Messager qw( %MESSAGER_PORTS $MESSAGER_SERVER );
 use Nick::Messager::Consumer;
+use Nick::Error ':try';
 use Messager::Config;
 
 $MESSAGER_PORTS{'consumer'}
@@ -22,13 +23,21 @@ $MESSAGER_PORTS{'consumer'}
         -> consumers();
 $MESSAGER_SERVER = 'localhost';
 
-my $server = Nick::Messager::Consumer -> new();
-
-main -> log(
-    'Listening on port: ' . $MESSAGER_PORTS{'consumer'}
-);
-my @line;
-while ( @line = $server -> get() ) {
-    main -> log( join '|', @line );
+my( $server, @line );
+for ( ;; ) {
+    try {
+        $server = Nick::Messager::Consumer -> new();
+        main -> log(
+            'Listening on port: ' . $MESSAGER_PORTS{'consumer'}
+        );
+        while ( @line = $server -> get() ) {
+            main -> log( join '|', @line );
+        }
+        main -> log( 'Server gone.' );
+    } catch Nick::Error with {
+        main -> error(
+            shift() -> text()
+        );
+    };
+    sleep 60;
 }
-main -> log( 'Server gone.' );
