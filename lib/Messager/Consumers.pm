@@ -30,7 +30,7 @@ sub server {
                 )
             );
             my $client_select = IO::Select -> new();
-            my $id;
+            my( $id, $type );
             my $handle_client = sub {
                 $started = time;
                 $#request = -1;
@@ -48,8 +48,10 @@ sub server {
                             push @request => $line;
                         } else {
                             for ( @consumers ) {
-                                if ( $_ -> add( $client, @request ) ) {
-                                    $class -> log( sprintf
+                                if (
+                                    $type = $_ -> add( $client, @request )
+                                ) {
+                                    $type == 1 and $class -> log( sprintf
                                         'Got %s consumer client: %s',
                                         $_ -> type(),
                                         $client -> peerhost()
