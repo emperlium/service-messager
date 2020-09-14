@@ -79,6 +79,7 @@ my @producers;
                 random_sleep();
             }
             print "producer_name_$_ close after $max\n";
+            $server -> send( 'finished' );
             $server -> close();
         };
     }
