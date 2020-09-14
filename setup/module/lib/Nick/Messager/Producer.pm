@@ -55,4 +55,15 @@ sub send {
     }
 }
 
+sub close {
+    my( $self ) = @_;
+    exists( $$self{'server'} ) or return;
+    my $server = delete $$self{'server'};
+    if ( $server -> connected() ) {
+        $server -> flush();
+        $server -> shutdown( 2 );
+        $server -> close();
+    }
+}
+
 1;
