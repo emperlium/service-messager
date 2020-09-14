@@ -14,7 +14,7 @@ BEGIN {
     Nick::HandleBinEnvDir -> handle( 'MESSAGER_HOME' );
 }
 
-use Nick::Messager qw( %MESSAGER_PORTS $MESSAGER_SERVER );
+use Nick::Messager qw( %MESSAGER_PORTS $MESSAGER_SERVER $MESSAGER_BLOCKING );
 use Nick::Messager::Consumer;
 use Nick::Messager::Producer;
 use Nick::Error;
@@ -25,6 +25,8 @@ our $CONSUMERS = 0;
 our $PRODUCERS = 1;
 our $SLEEP_OFF = 1;
 our $SLEEP_MIN = .1;
+
+#$MESSAGER_BLOCKING = 0;
 
 use Messager::Config;
 
