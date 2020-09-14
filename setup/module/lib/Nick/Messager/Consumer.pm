@@ -87,16 +87,13 @@ sub flush {
 
 sub close {
     my( $self ) = @_;
-    exists(
-        $$self{'server'}
-    ) && exists(
-        $$self{'select'}
-    ) and delete(
-        $$self{'select'}
-    ) -> remove(
-        $$self{'server'}
-    );
-    $self -> SUPER::close();
+    my $select = exists( $$self{'select'} )
+        && delete( $$self{'select'} );
+    exists( $$self{'server'} ) or return;
+    my $server = delete $$self{'server'};
+    $select and $select -> remove( $server );
+    $server -> connected()
+        and $server -> close();
 }
 
 1;
