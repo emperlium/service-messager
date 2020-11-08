@@ -6,20 +6,26 @@ use warnings;
 use base qw(
     IO::Select
     Messager::Consumers::TCP
+    Exporter
 );
+
+our( @EXPORT_OK, $HEADER );
+
+BEGIN {
+    $HEADER = join( "\r\n",
+        'HTTP/1.1 200 OK',
+        'Content-Type: text/event-stream',
+        'Cache-Control: no-cache',
+        'Access-Control-Allow-Origin: *',
+        'Connection: %s',
+        '', ''
+    );
+    @EXPORT_OK = qw( $HEADER );
+}
 
 sub type {
     return 'eventsource';
 }
-
-our $HEADER = join( "\r\n",
-    'HTTP/1.1 200 OK',
-    'Content-Type: text/event-stream',
-    'Cache-Control: no-cache',
-    'Access-Control-Allow-Origin: *',
-    'Connection: %s',
-    '', ''
-);
 
 sub add {
     my( $self, $client, $req, @headers ) = @_;
