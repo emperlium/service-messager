@@ -1,1 +1,8 @@
 Alias /messager/ "/home/messager/htdocs/"
+
+<Directory "/home/messager/htdocs">
+    Options ExecCGI FollowSymLinks
+    AddHandler cgi-script .cgi
+    SetEnv MESSAGER_HOME /home/messager/
+    Header set Access-Control-Allow-Origin "*"
+</Directory>

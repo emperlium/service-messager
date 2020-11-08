@@ -1,2 +1,2 @@
 var NICK_MESSAGER_PORT = 8025;
-var NICK_MESSAGER_PATH = '/messager-client/'
+var NICK_MESSAGER_PATH = '/messager/nph-consumer.cgi'
