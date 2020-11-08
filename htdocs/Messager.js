@@ -18,7 +18,7 @@ class NickMessager {
         };
 
         if ( !! window.EventSource ) {
-            let url = `${loc.protocol}//${host}:${NICK_MESSAGER_PORT}/`;
+            let url = `http://${host}:${NICK_MESSAGER_PORT}/`;
             let open_event_source = () => {
                 let evt = new EventSource( url );
                 evt.onopen = () => {
@@ -41,8 +41,7 @@ class NickMessager {
                 url = `${loc.protocol}//${host}${NICK_MESSAGER_PATH}`;
                 check_url( () => {
                     throw `EventSource path ${NICK_MESSAGER_PATH} not available`;
-                }
-                );
+                } );
             } );
         } else if ( !! window.WebSocket ) {
             let url = `ws://${host}:${NICK_MESSAGER_PORT}/`;
