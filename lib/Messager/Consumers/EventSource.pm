@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use base qw(
-    IO::Select
     Messager::Consumers::TCP
     Exporter
 );
@@ -29,15 +28,17 @@ sub type {
 
 sub add {
     my( $self, $client, $req, @headers ) = @_;
-    if ( $req eq 'GET / HTTP/1.1' ) {
+    if ( $req =~ m'^GET /\??(.*?) HTTP/1.1$' ) {
         for ( @headers ) {
             if ( $_ eq 'Accept: text/event-stream' ) {
-                $self -> SUPER::add( $client );
+                $self -> SUPER::add(
+                    $client, 'Messager', split /\+/, $1
+                );
                 $client -> printf( $HEADER => 'keep-alive' );
                 return 1;
             }
         }
-    } elsif ( $req eq 'HEAD / HTTP/1.1' ) {
+    } elsif ( $req =~ m'^HEAD /(.*?) HTTP/1.1$' ) {
         $client -> printf( $HEADER => 'close' );
         $client -> close();
         return 2;
@@ -46,7 +47,7 @@ sub add {
 }
 
 sub send {
-    $_[0] -> SUPER::send( "data: $_[1]\n\n" );
+    $_[0] -> SUPER::send( $_[1], "data: $_[2]\n\n" );
 }
 
 1;

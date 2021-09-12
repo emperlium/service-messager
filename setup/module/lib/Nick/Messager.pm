@@ -47,12 +47,4 @@ sub connect {
     );
 }
 
-sub close {
-    my( $self ) = @_;
-    exists( $$self{'server'} ) or return;
-    my $server = delete $$self{'server'};
-    $server -> connected()
-        and $server -> close();
-}
-
 1;

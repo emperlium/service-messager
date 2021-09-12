@@ -21,7 +21,10 @@ Nick::Messager::Consumer - Connect to a messager service as a consumer.
     # $MESSAGER_SERVER = 'hostname';
     # $MESSAGER_PORTS{'consumer'} = port;
 
-    my $server = Nick::Messager::Consumer -> new();
+    # If populated, list of consumers we're interested in, otherwise
+    # receive all messages.
+    my @types;
+    my $server = Nick::Messager::Consumer -> new( @types );
     my @line;
     while ( @line = $server -> get() ) {
         printf "%s\n", join '|', @line;
@@ -31,8 +34,8 @@ Nick::Messager::Consumer - Connect to a messager service as a consumer.
 =cut
 
 sub new {
-    my( $class ) = @_;
-    my $server = $class -> connect();
+    my( $class, @types ) = @_;
+    my $server = $class -> connect( @types );
     my $select = IO::Select -> new();
     $select -> add( $server );
     return bless {
@@ -42,8 +45,13 @@ sub new {
 }
 
 sub connect {
-    my $fh = $_[0] -> SUPER::connect( 'consumer' );
-    print $fh "Messager\n\n";
+    my( $class, @types ) = @_;
+    my $fh = $class -> SUPER::connect( 'consumer' );
+    print $fh "Messager\n";
+    for ( @types ) {
+        print $fh $_ . "\n";
+    }
+    print $fh "\n";
     return $fh;
 }
 

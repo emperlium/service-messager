@@ -21,10 +21,11 @@ use Nick::Error;
 
 $MESSAGER_SERVER = 'localhost';
 
-our $CONSUMERS = 0;
-our $PRODUCERS = 1;
+our $CONSUMERS = 2;
+our $PRODUCERS = 2;
 our $SLEEP_OFF = 1;
 our $SLEEP_MIN = .1;
+our $MAX_LINES = 3;
 
 #$MESSAGER_BLOCKING = 0;
 
@@ -47,8 +48,9 @@ $SIG{'KILL'} = sub {
 {  # consumers
     for my $name ( 1 .. $CONSUMERS ) {
         async {
-            my $server = Nick::Messager::Consumer -> new()
-                or return;
+            my $server = Nick::Messager::Consumer -> new(
+                'producer_name_' . $name
+            ) or return;
             my @line;
             while ( @line = $server -> get() ) {
                 print join( '|', 'client' . $name, @line ), "\n";
@@ -68,12 +70,13 @@ $SIG{'KILL'} = sub {
 
 my @producers;
 {  # producers
+    $MAX_LINES --;
     for ( 1 .. $PRODUCERS ) {
         push @producers => async {
             random_sleep();
             print "create server $_\n";
             my $server = Nick::Messager::Producer -> new( 'producer_name_' . $_ );
-            my $max = int( rand 5 ) + 5;
+            my $max = int( rand $MAX_LINES ) + $MAX_LINES;
             for ( my $i = 1; $i <= $max; $i++ ) {
                 $server -> send( 'event_name' => $i );
                 random_sleep();

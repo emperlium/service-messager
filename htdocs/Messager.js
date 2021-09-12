@@ -1,7 +1,11 @@
 class NickMessager {
-    constructor() {
+    constructor( ...filters ) {
         let loc = document.location;
         let host = loc.hostname;
+        let path = '';
+        if ( filters.length > 0 ) {
+            path += '?' + filters.join( '+' );
+        }
 
         var watchers = this.watchers = {};
         var on_message = msg => {
@@ -18,7 +22,7 @@ class NickMessager {
         };
 
         if ( !! window.EventSource ) {
-            let url = `http://${host}:${NICK_MESSAGER_PORT}/`;
+            let url = `http://${host}:${NICK_MESSAGER_PORT}/${path}`;
             let open_event_source = () => {
                 let evt = new EventSource( url );
                 evt.onopen = () => {
@@ -38,13 +42,13 @@ class NickMessager {
             };
             check_url( () => {
                 console.error( `EventSource port ${NICK_MESSAGER_PORT} not available` );
-                url = `${loc.protocol}//${host}${NICK_MESSAGER_PATH}`;
+                url = `${loc.protocol}//${host}${NICK_MESSAGER_PATH}/${path}`;
                 check_url( () => {
                     throw `EventSource path ${NICK_MESSAGER_PATH} not available`;
                 } );
             } );
         } else if ( !! window.WebSocket ) {
-            let url = `ws://${host}:${NICK_MESSAGER_PORT}/`;
+            let url = `ws://${host}:${NICK_MESSAGER_PORT}/${path}`;
             let ws = new WebSocket( url, [ 'chat' ] );
             ws.onopen = () => {
                 console.log( 'NickMessager WebSocket: ' + url );

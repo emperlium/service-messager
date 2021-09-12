@@ -5,15 +5,21 @@
         <meta content="utf-8" http-equiv="encoding">
         <script type="text/javascript" src="MessagerConfig.js"></script>
         <script type="text/javascript" src="Messager.js"></script>
-        <script type="text/javascript">
-            window.onload = function() {
-                // see bin/test.pl for companion message generator
-                new NickMessager().add_watcher( 'producer_name_1' ).event_name = msg => {
-                    console.log( new Date().toLocaleTimeString(), msg );
-                };
-            }
-        </script>
     </head>
     <body>
+        <script type="text/javascript">
+            (() => {
+                // see bin/test.pl for companion message generator
+                const types = [ 'producer_name_1', 'producer_name_2' ];
+                let msgr = new NickMessager( ...types );
+                types.forEach(
+                    type => {
+                        msgr.add_watcher( type ).event_name = msg => {
+                            console.log( new Date().toLocaleTimeString(), type, msg );
+                        }
+                    }
+                );
+            })();
+        </script>
     </body>
 <html>

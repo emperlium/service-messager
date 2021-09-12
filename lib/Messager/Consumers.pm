@@ -51,9 +51,11 @@ sub server {
                                 if (
                                     $type = $_ -> add( $client, @request )
                                 ) {
+                                    shift @request;
                                     $type == 1 and $class -> log( sprintf
-                                        'Got %s consumer client: %s',
+                                        'Got %s consumer client (%s): %s',
                                         $_ -> type(),
+                                        join( '|', $_ -> last_types() ),
                                         $client -> peerhost()
                                     );
                                     return;
@@ -83,10 +85,11 @@ sub server {
                         $client_select -> remove( $client );
                     } else {
                         while ( $line = $pipe -> getline() ) {
+                            $type = substr( $line, 0, index $line, "\t" );
                             for (
                                 grep $_ -> count(), @consumers
                             ) {
-                                $_ -> send( $line );
+                                $_ -> send( $type, $line );
                             }
                         }
                     }

@@ -18,6 +18,8 @@ use Nick::Messager::Consumer;
 use Nick::Error ':try';
 use Messager::Config;
 
+my @types = @ARGV;
+
 $MESSAGER_PORTS{'consumer'}
     = Messager::Config -> instance()
         -> consumers();
@@ -26,7 +28,7 @@ $MESSAGER_SERVER = 'localhost';
 my( $server, @line );
 for ( ;; ) {
     try {
-        $server = Nick::Messager::Consumer -> new();
+        $server = Nick::Messager::Consumer -> new( @types );
         main -> log(
             'Listening on port: ' . $MESSAGER_PORTS{'consumer'}
         );

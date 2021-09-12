@@ -35,7 +35,9 @@ $| = 1;
     ) {
         printf $HEADER => 'keep-alive';
         try {
-            my $server = Nick::Messager::Consumer -> new();
+            my $server = Nick::Messager::Consumer -> new(
+                split /\+/, $ENV{'QUERY_STRING'}
+            );
             my @line;
             while ( @line = $server -> get() ) {
                 printf "data: %s\n\n", join "\t", @line;

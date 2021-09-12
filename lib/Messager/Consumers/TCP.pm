@@ -3,43 +3,78 @@ package Messager::Consumers::TCP;
 use strict;
 use warnings;
 
-use base qw(
-    Nick::StandardBase
-    IO::Select
-);
+use base 'Nick::StandardBase';
+
+use IO::Select;
 
 sub type {
     return 'tcp';
 }
 
+sub new {
+    my( $class ) = @_;
+    return bless {
+        'select'    => IO::Select -> new(),
+        'types'     => {}
+    } => $class;
+}
+
 sub add {
-    @_ == 3 && $_[2] eq 'Messager'
+    my( $self, $client, $name, @types ) = @_;
+    $name && $name eq 'Messager'
         or return 0;
-    $_[0] -> SUPER::add( $_[1] );
+    $$self{'select'} -> add( $client );
+    my $fn = $client -> fileno();
+    @types or @types = ( 'all' );
+    for ( @types ) {
+        $$self{'types'}{$fn}{$_} = 1;
+    }
+    $$self{'last_types'} = \@types;
     return 1;
 }
 
+sub count {
+    $_[0]{'select'} -> count();
+}
+
+sub last_types {
+    return @{ $_[0]{'last_types'} };
+}
+
 sub send {
-    my( $self, $line ) = @_;
-    my $wrote = 0;
-    for (
-        $self -> can_write( 0 )
+    my( $self, $type, $line ) = @_;
+    my( $select, $types ) = @$self{ qw( select types ) };
+    my $ready = 0;
+    my $fn;
+    for my $client (
+        $select -> can_write( 0 )
     ) {
-        if ( $_ -> connected() ) {
-            print $_ $line;
-            $wrote ++;
+        if ( $client -> connected() ) {
+            $ready ++;
+            $fn = $client -> fileno();
+            exists( $$types{$fn}{'all'} )
+                || exists( $$types{$fn}{$type} )
+                    and print $client $line;
         } else {
-            $self -> remove( $_ );
+            $self -> remove( $client );
         }
     }
-    $wrote >= $self -> count()
+    $ready >= $select -> count()
         and return;
     for ( grep
         ! $_ -> connected(),
-        $self -> handles()
+        $select -> handles()
     ) {
         $self -> remove( $_ );
     }
+}
+
+sub remove {
+    my( $self, $client ) = @_;
+    $$self{'select'} -> remove( $client );
+    delete $$self{'types'}{
+        $client -> fileno()
+    };
 }
 
 1;
