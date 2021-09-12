@@ -32,6 +32,7 @@ sub new {
     my( $class, $type ) = @_;
     my $server = $class -> connect();
     $server -> autoflush( 1 );
+    binmode $server => ':encoding(UTF-8)';
     $server -> print( $type, "\n" );
     return bless { 'server' => $server } => $class;
 }
