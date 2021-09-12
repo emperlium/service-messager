@@ -39,6 +39,8 @@ You'll also need to install the lib-base repository from this account.
     systemctl start messager
     systemctl status messager
     ln -s /home/messager/config/apache.conf /etc/apache2/conf-enabled/messager.conf
+    cd /etc/apache2/mods-enabled
+    ln -s ../mods-available/headers.load
     apache2ctl graceful
 
 ## Usage
